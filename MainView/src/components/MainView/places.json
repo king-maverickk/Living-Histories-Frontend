@@ -1,0 +1,234 @@
+[
+  {
+    "id": "origins-centre",
+    "region": "Gauteng",
+    "type": "location",
+    "name": "Origins Centre",
+    "overview": "A museum dedicated to exploring the history of humankind, featuring exhibits on the San people, fossils, and rock art.",
+    "script": "Discover the journey of human evolution and cultural development at the Origins Centre.",
+    "location": {
+      "coordinates": {
+        "latitude": -26.1914,
+        "longitude": 28.0306
+      },
+      "address": "Yale Rd & Enoch Sontonga Ave, Braamfontein, Johannesburg, 2000, South Africa",
+      "geohash": "7zv1d9",
+      "radius": 500
+    },
+    "category": "Museum",
+    "tags": ["history", "anthropology", "culture"],
+    "timePeriod": {
+      "era": "Prehistoric to Modern",
+      "startYear": -100000,
+      "endYear": 2025
+    },
+    "trail": {
+      "id": "human-origins-trail",
+      "name": "Human Origins Trail",
+      "isPartOfTrail": true,
+      "orderInTrail": 1,
+      "nextLocationId": "wits-art-museum",
+      "previousLocationId": null
+    },
+    "media": {
+      "podcastUrl": "https://example.com/podcast/origins-centre",
+      "images": ["https://example.com/images/origins-centre.jpg"],
+      "attribution": "Origins Centre",
+      "transcriptUrl": "https://example.com/transcripts/origins-centre"
+    },
+    "source": {
+      "name": "City Sightseeing",
+      "url": "https://citysightseeing.co.za/en/joburg/origins-centre-at-wits",
+      "attributionText": "City Sightseeing Johannesburg"
+    },
+    "userExperience": {
+      "estimatedDuration": 120,
+      "accessibilityNotes": "Wheelchair accessible; guided tours available."
+    },
+    "stats": {
+      "views": 15000,
+      "listens": 5000,
+      "shares": 1200,
+      "rating": 4.7
+    },
+    "version": 1,
+    "metadata": {
+      "createdAt": "2025-05-18T10:00:00Z",
+      "updatedAt": "2025-05-18T10:00:00Z"
+    }
+  },
+  {
+    "id": "wits-art-museum",
+    "region": "Gauteng",
+    "type": "location",
+    "name": "Wits Art Museum",
+    "overview": "A contemporary art museum housing an extensive collection of African art, both historical and contemporary.",
+    "script": "Experience the rich tapestry of African artistry at the Wits Art Museum.",
+    "location": {
+      "coordinates": {
+        "latitude": -26.1945,
+        "longitude": 28.0340
+      },
+      "address": "Corner Bertha St & Jorissen St, Braamfontein, Johannesburg, 2000, South Africa",
+      "geohash": "7zv1d8",
+      "radius": 500
+    },
+    "category": "Art Museum",
+    "tags": ["art", "culture", "African art"],
+    "timePeriod": {
+      "era": "Historical to Contemporary",
+      "startYear": 1900,
+      "endYear": 2025
+    },
+    "trail": {
+      "id": "art-trail",
+      "name": "Braamfontein Art Trail",
+      "isPartOfTrail": true,
+      "orderInTrail": 2,
+      "nextLocationId": "planetarium",
+      "previousLocationId": "origins-centre"
+    },
+    "media": {
+      "podcastUrl": "https://example.com/podcast/wits-art-museum",
+      "images": ["https://example.com/images/wits-art-museum.jpg"],
+      "attribution": "Wits Art Museum",
+      "transcriptUrl": "https://example.com/transcripts/wits-art-museum"
+    },
+    "source": {
+      "name": "Tripadvisor",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g312578-d592647-Reviews-Witwatersrand_Wits_University-Johannesburg_Greater_Johannesburg_Gauteng.html",
+      "attributionText": "Tripadvisor"
+    },
+    "userExperience": {
+      "estimatedDuration": 90,
+      "accessibilityNotes": "Wheelchair accessible; free entry."
+    },
+    "stats": {
+      "views": 12000,
+      "listens": 3000,
+      "shares": 800,
+      "rating": 4.5
+    },
+    "version": 1,
+    "metadata": {
+      "createdAt": "2025-05-18T10:05:00Z",
+      "updatedAt": "2025-05-18T10:05:00Z"
+    }
+  },
+  {
+    "id": "planetarium",
+    "region": "Gauteng",
+    "type": "location",
+    "name": "Johannesburg Planetarium",
+    "overview": "A facility offering astronomical shows and educational programs about the universe.",
+    "script": "Embark on a cosmic journey through the stars at the Johannesburg Planetarium.",
+    "location": {
+      "coordinates": {
+        "latitude": -26.1910,
+        "longitude": 28.0300
+      },
+      "address": "Yale Rd, Braamfontein, Johannesburg, 2000, South Africa",
+      "geohash": "7zv1d9",
+      "radius": 500
+    },
+    "category": "Planetarium",
+    "tags": ["astronomy", "education", "science"],
+    "timePeriod": {
+      "era": "Modern",
+      "startYear": 1960,
+      "endYear": 2025
+    },
+    "trail": {
+      "id": "science-trail",
+      "name": "Wits Science Trail",
+      "isPartOfTrail": true,
+      "orderInTrail": 3,
+      "nextLocationId": "wits-theatre",
+      "previousLocationId": "wits-art-museum"
+    },
+    "media": {
+      "podcastUrl": "https://example.com/podcast/planetarium",
+      "images": ["https://example.com/images/planetarium.jpg"],
+      "attribution": "Johannesburg Planetarium",
+      "transcriptUrl": "https://example.com/transcripts/planetarium"
+    },
+    "source": {
+      "name": "SA-Venues",
+      "url": "https://www.sa-venues.com/attractionsga/wits.php",
+      "attributionText": "SA-Venues"
+    },
+    "userExperience": {
+      "estimatedDuration": 60,
+      "accessibilityNotes": "Limited wheelchair access; check schedule for showtimes."
+    },
+    "stats": {
+      "views": 8000,
+      "listens": 2000,
+      "shares": 500,
+      "rating": 4.3
+    },
+    "version": 1,
+    "metadata": {
+      "createdAt": "2025-05-18T10:10:00Z",
+      "updatedAt": "2025-05-18T10:10:00Z"
+    }
+  },
+  {
+    "id": "wits-theatre",
+    "region": "Gauteng",
+    "type": "location",
+    "name": "Wits Theatre",
+    "overview": "A performing arts venue hosting a variety of theatrical productions and cultural events.",
+    "script": "Immerse yourself in the performing arts at the vibrant Wits Theatre.",
+    "location": {
+      "coordinates": {
+        "latitude": -26.1925,
+        "longitude": 28.0315
+      },
+      "address": "Yale Rd, Braamfontein, Johannesburg, 2000, South Africa",
+      "geohash": "7zv1d9",
+      "radius": 500
+    },
+    "category": "Theatre",
+    "tags": ["performing arts", "culture", "theatre"],
+    "timePeriod": {
+      "era": "Modern",
+      "startYear": 1980,
+      "endYear": 2025
+    },
+    "trail": {
+      "id": "arts-trail",
+      "name": "Wits Arts Trail",
+      "isPartOfTrail": true,
+      "orderInTrail": 4,
+      "nextLocationId": "wits-anglo-dome",
+      "previousLocationId": "planetarium"
+    },
+    "media": {
+      "podcastUrl": "https://example.com/podcast/wits-theatre",
+      "images": ["https://example.com/images/wits-theatre.jpg"],
+      "attribution": "Wits Theatre",
+      "transcriptUrl": "https://example.com/transcripts/wits-theatre"
+    },
+    "source": {
+      "name": "Wits University",
+      "url": "https://www.wits.ac.za/campus-life/arts-and-culture/",
+      "attributionText": "Wits University"
+    },
+    "userExperience": {
+      "estimatedDuration": 120,
+      "accessibilityNotes": "Wheelchair accessible; ticketed events."
+    },
+    "stats": {
+      "views": 6000,
+      "listens": 1500,
+      "shares": 400,
+      "rating": 4.6
+    },
+    "version": 1,
+    "metadata": {
+      "createdAt": "2025-05-18T10:15:00Z",
+      "updatedAt": "2025-05-18T10:15:00Z"
+    }
+  }
+]
