@@ -5,22 +5,14 @@ import SwipeableCardContainer from 'components/SwipeableCardContainer'; // Impor
 import placesData from './places.json'; // Import the places data
 
 function MainView(props) {
-  // const [places, setPlaces] = useState([]);
-  // const [loading, setLoading] = useState(true);
-
-  // useEffect(() => {
-  //   // In a real application, you might fetch this from an API
-  //   // For now, we're just using the imported JSON data
-  //   setPlaces(placesData.places);
-  //   setLoading(false);
-  // }, []);
+ 
 
   
   return (
     <div className={`main-view flex flex-col h-full relative ${props.className || ''}`}>
       {/* Map Background */}
       <div className="absolute inset-0 z-0">
-        <GoogleMap />
+        <GoogleMap places={placesData} />
       </div>
 
       {/* Main content overlaid on the map background */}

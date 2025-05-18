@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
-const GoogleMap = () => {
+const GoogleMap = ({ places }) => {
   const mapRef = useRef(null);
   const [map, setMap] = useState(null);
   const [location, setLocation] = useState(null);
@@ -10,7 +10,6 @@ const GoogleMap = () => {
 
   // Initialize Google Maps JavaScript API
   useEffect(() => {
-    // Load Google Maps JavaScript API script
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
     script.async = true;
@@ -29,10 +28,8 @@ const GoogleMap = () => {
   const initMap = () => {
     if (!mapRef.current) return;
 
-    // Default center (will be replaced with user location when available)
     const defaultCenter = { lat: 0, lng: 0 };
-    
-    // Create map instance
+
     const googleMap = new window.google.maps.Map(mapRef.current, {
       zoom: 14,
       center: defaultCenter,
@@ -40,34 +37,31 @@ const GoogleMap = () => {
       fullscreenControl: true,
       streetViewControl: true,
       zoomControl: true,
-      gestureHandling: "greedy" // Makes mobile interaction easier
+      gestureHandling: "greedy",
     });
-    
+
     setMap(googleMap);
-    
-    // Get user's location
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const userLocation = {
             lat: position.coords.latitude,
-            lng: position.coords.longitude
+            lng: position.coords.longitude,
           };
-          
+
           setLocation(userLocation);
           
           // Center map on user's location
           googleMap.setCenter(userLocation);
-          
-          // Add marker at user's location
+
           new window.google.maps.Marker({
             position: userLocation,
             map: googleMap,
             title: "Your Location",
-            animation: window.google.maps.Animation.DROP
+            animation: window.google.maps.Animation.DROP,
           });
-          
-          // Get address for user's location
+
           const geocoder = new window.google.maps.Geocoder();
           geocoder.geocode({ location: userLocation }, (results, status) => {
             if (status === "OK" && results[0]) {
@@ -88,6 +82,18 @@ const GoogleMap = () => {
     } else {
       setError("Geolocation not supported by your browser");
     }
+
+    // Add markers for places
+    if (places && Array.isArray(places)) {
+      places.forEach((place) => {
+        const { latitude, longitude } = place.location.coordinates;
+        new window.google.maps.Marker({
+          position: { lat: latitude, lng: longitude },
+          map: googleMap,
+          title: place.name,
+        });
+      });
+    }
   };
 
   return (
@@ -97,11 +103,7 @@ const GoogleMap = () => {
           {error}
         </div>
       )}
-      <div 
-        ref={mapRef} 
-        className="w-full h-full"
-        style={{ cursor: "grab" }}
-      />
+      <div ref={mapRef} className="w-full h-full" style={{ cursor: "grab" }} />
     </div>
   );
 };
