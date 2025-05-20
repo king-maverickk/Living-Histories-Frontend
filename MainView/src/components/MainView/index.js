@@ -16,7 +16,7 @@ function MainView(props) {
         } else {
           // Fetch places data from the API
           // need the id (immediate area; get this from geocoding) and partitionKey (province)
-          const response = await fetch(process.env.REACT_APP_PLACES_ENDPOINT+"?id=1111&partitionKey=1111");
+          const response = await fetch(process.env.REACT_APP_PLACES_ENDPOINT+"?id=origins-centre&partitionKey=Gauteng");
           if (!response.ok) throw new Error("Failed to fetch data");
 
           const data = await response.json();

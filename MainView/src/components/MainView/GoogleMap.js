@@ -88,8 +88,8 @@ const GoogleMap = ({ places, onAddressResolved }) => {
     }
 
     // Add markers for places
-    if (places && Array.isArray(places)) {
-      places.forEach((place) => {
+    if (places && Array.isArray(places.Content)) {
+      places.Content.forEach((place) => {
         const { latitude, longitude } = place.location.coordinates;
         new window.google.maps.Marker({
           position: { lat: latitude, lng: longitude },

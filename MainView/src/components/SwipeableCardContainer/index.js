@@ -69,13 +69,13 @@ const SwipeableCardContainer = ({ places }) => {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {places.map((place) => (
-          <div key={place.id} className="flex-shrink-0">
+        {places.Content.map((place, index) => (
+          <div key={index} className="flex-shrink-0">
             <InformationCard 
               placeName={place.name}
-              distance={place.distance}
+              distance={place.location?.radius ? `${place.location.radius}m away` : undefined}
               overview={place.overview}
-              playButtonSrc={place.playButtonSrc}
+              playButtonSrc={place.media?.podcastUrl}
             />
           </div>
         ))}
@@ -83,9 +83,9 @@ const SwipeableCardContainer = ({ places }) => {
       
       {/* Navigation dots */}
       <div className="flex justify-center mt-3 pointer-events-auto">
-        {places.map((place, index) => (
+        {places.Content.map((place, index) => (
           <button
-            key={place.id}
+            key={index}
             onClick={() => setCurrentIndex(index)}
             className={`h-2 w-2 mx-1 rounded-full ${
               index === currentIndex ? 'bg-blue-500' : 'bg-gray-300'
