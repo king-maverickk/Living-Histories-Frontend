@@ -1,11 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import GoogleMap from './GoogleMap';
 import SwipeableCardContainer from 'components/SwipeableCardContainer';
-import placesData from './places.json';
 
 function MainView(props) {
+  const [placesData, setPlacesData] = useState(null);
   const [userAddress, setUserAddress] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const cachedData = localStorage.getItem('placesData');
+        if (cachedData) {
+          setPlacesData(JSON.parse(cachedData));
+        } else {
+          // Fetch places data from the API
+          // need the id (immediate area; get this from geocoding) and partitionKey (province)
+          const response = await fetch(process.env.REACT_APP_PLACES_ENDPOINT+"?id=1111&partitionKey=1111");
+          if (!response.ok) throw new Error("Failed to fetch data");
+
+          const data = await response.json();
+          localStorage.setItem('placesData', JSON.stringify(data));
+          setPlacesData(data);
+        }
+      } catch (error) {
+        console.error("Error loading places data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (!placesData) {
+    return <div className="text-center mt-10">Loading location data...</div>;
+  }
 
   return (
     <div className={`main-view flex flex-col h-full relative ${props.className || ''}`}>
