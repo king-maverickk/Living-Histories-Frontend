@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 
-const GoogleMap = ({ places }) => {
+const GoogleMap = ({ places, onAddressResolved }) => {
   const mapRef = useRef(null);
   const [map, setMap] = useState(null);
   const [location, setLocation] = useState(null);
@@ -8,7 +8,6 @@ const GoogleMap = ({ places }) => {
   const [error, setError] = useState(null);
   const GOOGLE_MAPS_API_KEY = "AIzaSyBL4uigx0KtpZFwJ1La4LgOV3r98yI6_lQ";
 
-  // Initialize Google Maps JavaScript API
   useEffect(() => {
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
@@ -36,7 +35,6 @@ const GoogleMap = ({ places }) => {
       mapTypeControl: true,
       fullscreenControl: true,
       streetViewControl: true,
-      zoomControl: true,
       gestureHandling: "greedy",
     });
 
@@ -65,7 +63,13 @@ const GoogleMap = ({ places }) => {
           const geocoder = new window.google.maps.Geocoder();
           geocoder.geocode({ location: userLocation }, (results, status) => {
             if (status === "OK" && results[0]) {
-              setAddress(results[0].formatted_address);
+              const resolvedAddress = results[0].formatted_address;
+              setAddress(resolvedAddress);
+
+              // 🔁 Send address back to parent
+              if (onAddressResolved) {
+                onAddressResolved(resolvedAddress);
+              }
             } else {
               setAddress("Address not found");
             }
