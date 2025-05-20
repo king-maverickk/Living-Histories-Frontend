@@ -6,7 +6,7 @@ const GoogleMap = ({ places, onAddressResolved }) => {
   const [location, setLocation] = useState(null);
   const [address, setAddress] = useState(null);
   const [error, setError] = useState(null);
-  const GOOGLE_MAPS_API_KEY = "AIzaSyBL4uigx0KtpZFwJ1La4LgOV3r98yI6_lQ";
+  const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
   useEffect(() => {
     const script = document.createElement("script");
