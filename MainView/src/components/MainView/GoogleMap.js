@@ -1,10 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 
-const GoogleMap = ({ places, onAddressResolved }) => {
+const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
   const mapRef = useRef(null);
   const [map, setMap] = useState(null);
-  const [location, setLocation] = useState(null);
-  const [address, setAddress] = useState(null);
   const [error, setError] = useState(null);
   const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
@@ -48,9 +46,6 @@ const GoogleMap = ({ places, onAddressResolved }) => {
             lng: position.coords.longitude,
           };
 
-          setLocation(userLocation);
-          
-          // Center map on user's location
           googleMap.setCenter(userLocation);
 
           new window.google.maps.Marker({
@@ -64,31 +59,47 @@ const GoogleMap = ({ places, onAddressResolved }) => {
           geocoder.geocode({ location: userLocation }, (results, status) => {
             if (status === "OK" && results[0]) {
               const resolvedAddress = results[0].formatted_address;
-              setAddress(resolvedAddress);
 
               // 🔁 Send address back to parent
               if (onAddressResolved) {
                 onAddressResolved(resolvedAddress);
               }
+
+              // Extract town and province
+              let town = null;
+              let province = null;
+
+              for (const component of results[0].address_components) {
+                if (component.types.includes("locality")) {
+                  town = component.long_name;
+                } else if (component.types.includes("administrative_area_level_1")) {
+                  province = component.long_name;
+                }
+              }
+
+              if (town && province && onAreaResolved) {
+                onAreaResolved({ town, province });
+              }
             } else {
-              setAddress("Address not found");
+              if (onAddressResolved) {
+                onAddressResolved("Address not found");
+              }
             }
           });
         },
         (err) => {
-          if (err.code === 1) {
-            setError("Location permission denied");
-          } else {
-            setError(`Error getting location: ${err.message}`);
-          }
+          const msg = err.code === 1
+            ? "Location permission denied"
+            : `Error getting location: ${err.message}`;
+          setError(msg);
         }
       );
     } else {
       setError("Geolocation not supported by your browser");
     }
 
-    // Add markers for places
-    if (places && Array.isArray(places.Content)) {
+    // Show markers from `places`
+    if (places?.Content?.length > 0) {
       places.Content.forEach((place) => {
         const { latitude, longitude } = place.location.coordinates;
         new window.google.maps.Marker({

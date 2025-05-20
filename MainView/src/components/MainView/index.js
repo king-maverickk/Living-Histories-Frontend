@@ -6,40 +6,54 @@ import SwipeableCardContainer from 'components/SwipeableCardContainer';
 function MainView(props) {
   const [placesData, setPlacesData] = useState(null);
   const [userAddress, setUserAddress] = useState(null);
+  const [town, setTown] = useState(null);
+  const [province, setProvince] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!town || !province) return;
+
       try {
-        const cachedData = localStorage.getItem('placesData');
+        const cacheKey = `places_${town}`;
+        const cachedData = localStorage.getItem(cacheKey);
+
         if (cachedData) {
           setPlacesData(JSON.parse(cachedData));
         } else {
-          // Fetch places data from the API
-          // need the id (immediate area; get this from geocoding) and partitionKey (province)
-          const response = await fetch(process.env.REACT_APP_PLACES_ENDPOINT+"?id=origins-centre&partitionKey=Gauteng");
-          if (!response.ok) throw new Error("Failed to fetch data");
+          const url = `${process.env.REACT_APP_PLACES_ENDPOINT}?id=${encodeURIComponent(
+            town
+          )}&partitionKey=${encodeURIComponent(province)}`;
+          console.log("Fetching places with:", {
+            id: town,
+            partitionKey: province,
+          });
+          const response = await fetch(url);
+          if (!response.ok) throw new Error('Failed to fetch data');
 
           const data = await response.json();
-          localStorage.setItem('placesData', JSON.stringify(data));
+          localStorage.setItem(cacheKey, JSON.stringify(data));
           setPlacesData(data);
         }
       } catch (error) {
-        console.error("Error loading places data:", error);
+        console.error('Error loading places data:', error);
       }
     };
 
     fetchData();
-  }, []);
-
-  if (!placesData) {
-    return <div className="text-center mt-10">Loading location data...</div>;
-  }
+  }, [town, province]);
 
   return (
     <div className={`main-view flex flex-col h-full relative ${props.className || ''}`}>
       {/* Map Background */}
       <div className="absolute inset-0 z-0">
-        <GoogleMap places={placesData} onAddressResolved={setUserAddress} />
+        <GoogleMap
+          places={placesData}
+          onAddressResolved={setUserAddress}
+          onAreaResolved={(area) => {
+            setTown(area.town);
+            setProvince(area.province);
+          }}
+        />
       </div>
 
       {/* Main content overlaid on the map background */}
@@ -51,14 +65,14 @@ function MainView(props) {
               <img
                 className="w-7"
                 src={'/assets/MainView/right_arrow.png'}
-                alt="alt text"
+                alt="arrow"
               />
               <div className="w-52.25 flex flex-col">
                 <p className="font-medium text-4.5 leading-1.2 font-Inter text-gray mr-8">
                   You are at...
                 </p>
                 <p className="text-4 leading-1.22 font-Inter text-black truncate">
-                  {userAddress || "Finding your location..."}
+                  {userAddress || 'Finding your location...'}
                 </p>
               </div>
             </div>
@@ -67,9 +81,11 @@ function MainView(props) {
       </div>
 
       {/* Swipeable cards at bottom */}
-      <div className="w-142 h-55 flex gap-x-3 absolute left-3.75 bottom-5.25 min-h-31 z-20 pointer-events-none">
-        <SwipeableCardContainer places={placesData} />
-      </div>
+      {placesData && (
+        <div className="w-142 h-55 flex gap-x-3 absolute left-3.75 bottom-5.25 min-h-31 z-20 pointer-events-none">
+          <SwipeableCardContainer places={placesData} />
+        </div>
+      )}
     </div>
   );
 }
