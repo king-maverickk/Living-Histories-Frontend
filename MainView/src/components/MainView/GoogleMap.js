@@ -70,19 +70,14 @@ const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
               }
 
               // Extract town and province
+              let street = null;
               let town = null;
-              let province = null;
 
-              for (const component of results[0].address_components) {
-                if (component.types.includes("locality")) {
-                  town = component.long_name;
-                } else if (component.types.includes("administrative_area_level_1")) {
-                  province = component.long_name;
-                }
-              }
+              street = results[0].address_components[1]?.long_name || null;
+              town = results[0].address_components[2]?.long_name || null;
 
-              if (town && province && onAreaResolved) {
-                onAreaResolved({ town, province });
+              if (street && town && onAreaResolved) {
+                onAreaResolved({ street, town });
               }
             } else {
               if (onAddressResolved) {

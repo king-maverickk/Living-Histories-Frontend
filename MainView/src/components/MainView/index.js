@@ -6,26 +6,26 @@ import SwipeableCardContainer from 'components/SwipeableCardContainer';
 function MainView(props) {
   const [placesData, setPlacesData] = useState(null);
   const [userAddress, setUserAddress] = useState(null);
+  const [street, setStreet] = useState(null);
   const [town, setTown] = useState(null);
-  const [province, setProvince] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!town || !province) return;
+      if (!street || !town) return;
 
       try {
-        const cacheKey = `places_${town}`;
+        const cacheKey = `places_${street}_${town}`;
         const cachedData = localStorage.getItem(cacheKey);
 
         if (cachedData) {
           setPlacesData(JSON.parse(cachedData));
         } else {
           const url = `${process.env.REACT_APP_PLACES_ENDPOINT}?id=${encodeURIComponent(
-            town
-          )}&partitionKey=${encodeURIComponent(province)}`;
+            street
+          )}&partitionKey=${encodeURIComponent(town)}`;
           console.log("Fetching places with:", {
-            id: town,
-            partitionKey: province,
+            id: street,
+            partitionKey: town,
           });
           const response = await fetch(url);
           if (!response.ok) throw new Error('Failed to fetch data');
@@ -40,7 +40,7 @@ function MainView(props) {
     };
 
     fetchData();
-  }, [town, province]);
+  }, [street, town]);
 
   return (
     <div className={`main-view flex flex-col h-full relative ${props.className || ''}`}>
@@ -50,8 +50,8 @@ function MainView(props) {
           places={placesData}
           onAddressResolved={setUserAddress}
           onAreaResolved={(area) => {
+            setStreet(area.street);
             setTown(area.town);
-            setProvince(area.province);
           }}
         />
       </div>
@@ -61,22 +61,22 @@ function MainView(props) {
         <div className="flex flex-col overflow-hidden">
           {/* Section for current user location details */}
           <div className="flex flex-col bg-white rounded-[38px] shadow-[0px_4px_51px_0px_rgba(0,0,0,0.1)] overflow-hidden mt-8 mx-3.75 mb-142.5 pointer-events-auto">
-            <div className="flex items-center gap-x-3.25 mt-4 mx-6 mb-3.5">
-              <img
-                className="w-7"
-                src={'/assets/MainView/right_arrow.png'}
-                alt="arrow"
-              />
-              <div className="w-52.25 flex flex-col">
-                <p className="font-medium text-4.5 leading-1.2 font-Inter text-gray mr-8">
-                  You are at...
-                </p>
-                <p className="text-4 leading-1.22 font-Inter text-black truncate">
-                  {userAddress || 'Finding your location...'}
-                </p>
-              </div>
-            </div>
-          </div>
+  <div className="flex items-center gap-x-3.25 mt-2 mx-6 mb-2">
+    <img
+      className="w-5.25"
+      src={'/assets/MainView/right_arrow.png'}
+      alt="arrow"
+    />
+    <div className="w-52.25 flex flex-col">
+      <p className="font-medium text-4 leading-1.2 font-Inter text-gray mr-8">
+        You are at...
+      </p>
+      <p className="text-3.5 leading-1.22 font-Inter text-black truncate">
+        {userAddress || 'Finding your location...'}
+      </p>
+    </div>
+  </div>
+</div>
         </div>
       </div>
 
