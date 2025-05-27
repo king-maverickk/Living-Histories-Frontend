@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "eventTypeImg": "/assets/ChooseEvent/649408def69ab7b21e6f704f2a17816e.png",
+    "eventName": "Sophiatown Heritage and Cultural Centre Establishment",
+    "eventCategory": "Cultural",
+    "eventYears": "2006"
+  },
+  {
+    "id": 2,
+    "eventTypeImg": "/assets/ChooseEvent/historical_marker.png",
+    "eventName": "Constitution Hill Museum Opening",
+    "eventCategory": "Historical",
+    "eventYears": "2004"
+  },
+  {
+    "id": 3,
+    "eventTypeImg": "/assets/ChooseEvent/political_event.png",
+    "eventName": "First Democratic Elections",
+    "eventCategory": "Political",
+    "eventYears": "1994"
+  },
+  {
+    "id": 4,
+    "eventTypeImg": "/assets/ChooseEvent/sports_event.png",
+    "eventName": "FIFA World Cup Hosting",
+    "eventCategory": "Sports",
+    "eventYears": "2010"
+  },
+  {
+    "id": 5,
+    "eventTypeImg": "/assets/ChooseEvent/music_event.png",
+    "eventName": "Johannesburg International Mozart Festival",
+    "eventCategory": "Music",
+    "eventYears": "2012"
+  }
+]
