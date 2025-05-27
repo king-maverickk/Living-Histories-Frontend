@@ -1,28 +1,47 @@
+// MainView.js
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import GoogleMap from './GoogleMap';
 import SwipeableCardContainer from 'components/SwipeableCardContainer';
 import GenerateButton from 'components/GenerateButton';
-import mockEvents from './mockEvents.json';
 
 function MainView(props) {
   const [placesData, setPlacesData] = useState(null);
+  const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
   const [userAddress, setUserAddress] = useState(null);
   const [street, setStreet] = useState(null);
   const [town, setTown] = useState(null);
   const [showChooseEvent, setShowChooseEvent] = useState(false);
-  const [events] = useState(mockEvents);
+  const [events, setEvents] = useState([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(false);
+  const [eventsError, setEventsError] = useState(null);
+
+  // Default event type images based on category
+  const categoryImages = {
+    'Cultural': '/assets/ChooseEvent/649408def69ab7b21e6f704f2a17816e.png',
+    'Historical': '/assets/ChooseEvent/ancient-scroll.png',
+    'Political': '/assets/ChooseEvent/political-science.png',
+    'Civic': '/assets/ChooseEvent/political_event.png',
+    'Civic/Political': '/assets/ChooseEvent/political_event.png',
+    'Sports': '/assets/ChooseEvent/sports_event.png',
+    'Music': '/assets/ChooseEvent/music_event.png',
+    'default': '/assets/ChooseEvent/ancient-scroll.png'
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       if (!street || !town) return;
+
+      setIsLoadingPlaces(true);
 
       try {
         const cacheKey = `places_${street}_${town}`;
         const cachedData = localStorage.getItem(cacheKey);
 
         if (cachedData) {
-          setPlacesData(JSON.parse(cachedData));
+          const parsedData = JSON.parse(cachedData);
+          setPlacesData(parsedData);
+          console.log("Using cached places data:", parsedData);
         } else {
           const url = `${process.env.REACT_APP_PLACES_ENDPOINT}?id=${encodeURIComponent(
             street
@@ -31,20 +50,170 @@ function MainView(props) {
             id: street,
             partitionKey: town,
           });
-          const response = await fetch(url);
-          if (!response.ok) throw new Error('Failed to fetch data');
-
-          const data = await response.json();
-          localStorage.setItem(cacheKey, JSON.stringify(data));
-          setPlacesData(data);
+          
+          try {
+            const response = await fetch(url);
+            console.log("Response status:", response.status);
+            
+            if (!response.ok) {
+              throw new Error(`Failed to fetch data: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log("Fetched places data:", data);
+            
+            // Handle empty data case
+            if (!data || (data.Content && data.Content.length === 0)) {
+              console.log("No places data available");
+              setPlacesData({ Content: [] }); // Set empty content array
+            } else {
+              localStorage.setItem(cacheKey, JSON.stringify(data));
+              setPlacesData(data);
+            }
+          } catch (fetchError) {
+            console.error("Fetch error:", fetchError);
+            // Continue with empty data rather than failing
+            setPlacesData({ Content: [] });
+            console.error("Couldn't load places data. Using default view.");
+          }
         }
       } catch (error) {
-        console.error('Error loading places data:', error);
+        console.error('Error in places data flow:', error);
+        setPlacesData({ Content: [] }); // Provide fallback empty data
+        console.error("Error loading places data. Using default view.");
+      } finally {
+        setIsLoadingPlaces(false);
       }
     };
 
     fetchData();
   }, [street, town]);
+
+  // Parse free-text event string into structured object
+  const parseEventString = (eventString) => {
+    if (!eventString || typeof eventString !== 'string') {
+      return null;
+    }
+
+    console.log("Parsing event string:", eventString);
+    
+    // Try to split by " - " pattern
+    const parts = eventString.split(' - ');
+    
+    if (parts.length < 2) {
+      // If can't split properly, return basic object with original string as name
+      return {
+        id: `event-${Math.random().toString(36).substr(2, 9)}`,
+        eventName: eventString.trim(),
+        eventYears: '',
+        eventCategory: '',
+        eventTypeImg: categoryImages.default
+      };
+    }
+    
+    // Extract parts based on expected format "EVENT - TIME_PERIOD - CATEGORY"
+    let eventName, eventYears, eventCategory;
+    
+    if (parts.length >= 3) {
+      // Full format with all three parts
+      eventName = parts[0].trim();
+      eventYears = parts[1].trim();
+      eventCategory = parts[2].trim();
+    } else if (parts.length === 2) {
+      // Only two parts, assume EVENT - CATEGORY
+      eventName = parts[0].trim();
+      eventYears = '';
+      eventCategory = parts[1].trim();
+    }
+    
+    // Get appropriate image based on category
+    const eventTypeImg = categoryImages[eventCategory] || categoryImages.default;
+    
+    return {
+      id: `event-${Math.random().toString(36).substr(2, 9)}`,
+      eventName,
+      eventYears,
+      eventCategory,
+      eventTypeImg
+    };
+  };
+
+  // Fetch events from API when town changes
+  useEffect(() => {
+    const fetchEvents = async () => {
+      if (!town) return;
+      
+      setIsLoadingEvents(true);
+      setEventsError(null);
+      
+      try {
+        const url = `${process.env.REACT_APP_GET_EVENTS_ENDPOINT}?location=${encodeURIComponent(town)}`;
+        console.log("Fetching events with location:", town);
+        
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to fetch events');
+        
+        const data = await response.json();
+        console.log("Fetched events data:", data);
+        
+        // Process the events data
+        let processedEvents = [];
+        
+        if (Array.isArray(data)) {
+          // If data is array of strings, parse each string
+          processedEvents = data
+            .filter(item => item && typeof item === 'string')
+            .map(parseEventString)
+            .filter(Boolean); // Remove any null results
+        } else if (data && typeof data === 'object') {
+          // If it's an object with items/events/data property
+          let eventArray = null;
+          
+          if (Array.isArray(data.items)) {
+            eventArray = data.items;
+          } else if (Array.isArray(data.events)) {
+            eventArray = data.events;
+          } else if (Array.isArray(data.data)) {
+            eventArray = data.data;
+          }
+          
+          if (eventArray) {
+            processedEvents = eventArray
+              .filter(item => item && (typeof item === 'string' || typeof item === 'object'))
+              .map(item => {
+                if (typeof item === 'string') {
+                  return parseEventString(item);
+                } else if (item.eventName) {
+                  // Already structured object
+                  return {
+                    ...item,
+                    id: item.id || `event-${Math.random().toString(36).substr(2, 9)}`,
+                    eventTypeImg: item.eventTypeImg || categoryImages[item.eventCategory] || categoryImages.default
+                  };
+                }
+                return null;
+              })
+              .filter(Boolean);
+          } else {
+            console.error("Received events data in unexpected format:", data);
+          }
+        } else {
+          console.error("Received events data in unexpected format:", data);
+        }
+        
+        console.log("Processed events:", processedEvents);
+        setEvents(processedEvents);
+      } catch (error) {
+        console.error('Error loading events data:', error);
+        setEventsError('Failed to load events. Please try again later.');
+        setEvents([]); // Ensure events is at least an empty array
+      } finally {
+        setIsLoadingEvents(false);
+      }
+    };
+    
+    fetchEvents();
+  }, [town]);
 
   const handleGenerateButtonClick = () => {
     setShowChooseEvent(true);
@@ -56,7 +225,7 @@ function MainView(props) {
 
   return (
     <div className={`main-view flex flex-col h-screen w-full relative ${props.className || ''}`}>
-      {/* Map Background - Ensuring it fills the entire viewport */}
+      {/* Map Background - Ensure it fills the entire viewport */}
       <div className="absolute inset-0 w-full h-full z-0">
         <GoogleMap
           places={placesData}
@@ -67,6 +236,16 @@ function MainView(props) {
           }}
         />
       </div>
+
+      {/* Places data loading indicator */}
+      {isLoadingPlaces && (
+        <div className="absolute top-20 right-4 bg-white p-2 rounded-lg shadow-md z-30">
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 mr-2"></div>
+            <span className="text-sm">Loading places...</span>
+          </div>
+        </div>
+      )}
 
       {/* Dark overlay - shown when ChooseEvent is visible */}
       {showChooseEvent && (
@@ -119,8 +298,28 @@ function MainView(props) {
                   </p>
                 </div>
 
-                {/* Event items mapped from mock data */}
-                {events.map((event) => (
+                {/* Loading state */}
+                {isLoadingEvents && (
+                  <div className="flex justify-center items-center py-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                  </div>
+                )}
+
+                {/* Error state */}
+                {eventsError && (
+                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-2">
+                    {eventsError}
+                  </div>
+                )}
+
+                {/* Event items mapped from API data */}
+                {!isLoadingEvents && events.length === 0 && !eventsError && (
+                  <div className="text-center py-4 text-gray-500">
+                    No events found for this location.
+                  </div>
+                )}
+
+                {!isLoadingEvents && Array.isArray(events) && events.map((event) => (
                   <div 
                     key={event.id} 
                     onClick={handleEventClick} 
@@ -143,10 +342,10 @@ function MainView(props) {
                         </p>
 
                         <div className="flex gap-x-2.25">
-                          <p className="font-medium text-3 leading-1.25 font-Inter text-[rgb(125,139,142)] w-11.25">
+                          <p className="font-medium text-3 leading-1.25 font-Inter text-[rgb(125,139,142)] whitespace-nowrap">
                             {event.eventCategory}
                           </p>
-                          <p className="font-medium text-3 leading-1.25 font-Inter text-[rgb(125,139,142)] w-7.75">
+                          <p className="font-medium text-3 leading-1.25 font-Inter text-[rgb(125,139,142)] whitespace-nowrap">
                             {event.eventYears}
                           </p>
                         </div>
@@ -160,8 +359,8 @@ function MainView(props) {
         </div>
       </div>
 
-      {/* Swipeable cards at bottom */}
-      {placesData && (
+      {/* Swipeable cards at bottom - only shown if places data exists and has content */}
+      {placesData && placesData.Content && placesData.Content.length > 0 && (
         <div className="w-full h-55 flex gap-x-3 absolute left-3.75 bottom-5.25 min-h-31 z-20 pointer-events-none">
           <SwipeableCardContainer places={placesData} />
         </div>
