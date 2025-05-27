@@ -32,12 +32,19 @@ const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
     const defaultCenter = { lat: 0, lng: 0 };
 
     const googleMap = new window.google.maps.Map(mapRef.current, {
-      zoom: 14,
+      zoom: 15,
       center: defaultCenter,
-      mapTypeControl: true,
-      fullscreenControl: true,
-      streetViewControl: true,
+      mapTypeControl: false,
+      fullscreenControl: false,
+      streetViewControl: false,
       gestureHandling: "greedy",
+      styles: [
+        {
+          featureType: "poi",
+          elementType: "labels",
+          stylers: [{ visibility: "off" }]
+        }
+      ]
     });
 
     setMap(googleMap);
