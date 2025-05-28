@@ -15,17 +15,20 @@ function MainView(props) {
   const [events, setEvents] = useState([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState(false);
   const [eventsError, setEventsError] = useState(null);
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const [audioError, setAudioError] = useState(null);
 
   // Default event type images based on category
   const categoryImages = {
     'Cultural': '/assets/ChooseEvent/649408def69ab7b21e6f704f2a17816e.png',
-    'Historical': '/assets/ChooseEvent/ancient-scroll.png',
-    'Political': '/assets/ChooseEvent/political-science.png',
+    'Historical': '/assets/ChooseEvent/historical_marker.png',
+    'Political': '/assets/ChooseEvent/political_event.png',
     'Civic': '/assets/ChooseEvent/political_event.png',
     'Civic/Political': '/assets/ChooseEvent/political_event.png',
     'Sports': '/assets/ChooseEvent/sports_event.png',
     'Music': '/assets/ChooseEvent/music_event.png',
-    'default': '/assets/ChooseEvent/ancient-scroll.png'
+    'default': '/assets/ChooseEvent/649408def69ab7b21e6f704f2a17816e.png'
   };
 
   useEffect(() => {
@@ -215,12 +218,62 @@ function MainView(props) {
     fetchEvents();
   }, [town]);
 
+  // Function to fetch audio URL from API
+  const fetchAudioUrl = async (event) => {
+    setIsLoadingAudio(true);
+    setAudioError(null);
+    setAudioUrl(null);
+    
+    try {
+      console.log("Fetching audio for event:", event);
+      
+      // Extract the required fields from the event object
+      const { eventName, eventYears, eventCategory } = event;
+      
+      // Create the request body with separate fields including town
+      const requestBody = {
+        eventName,
+        eventYears,
+        eventCategory,
+        town // Include the town in the request body
+      };
+      
+      console.log("Sending audio request with:", requestBody);
+      
+      const url = process.env.REACT_APP_AUDIO_GEN_ENDPOINT;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Audio API request failed with status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("Audio API response:", data);
+      
+      // Set the audio URL from the response
+      setAudioUrl(data);
+    } catch (error) {
+      console.error("Error fetching audio:", error);
+      setAudioError(`Failed to generate audio: ${error.message}`);
+    } finally {
+      setIsLoadingAudio(false);
+    }
+  };
+
   const handleGenerateButtonClick = () => {
     setShowChooseEvent(true);
   };
 
-  const handleEventClick = () => {
-    setShowChooseEvent(false);
+  const handleEventClick = (event) => {
+    // Don't close the ChooseEvent component immediately
+    // Instead, make the API request with the chosen event
+    fetchAudioUrl(event);
   };
 
   return (
@@ -298,17 +351,47 @@ function MainView(props) {
                   </p>
                 </div>
 
-                {/* Loading state */}
+                {/* Loading state for events */}
                 {isLoadingEvents && (
                   <div className="flex justify-center items-center py-4">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
                   </div>
                 )}
 
-                {/* Error state */}
+                {/* Error state for events */}
                 {eventsError && (
                   <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-2">
                     {eventsError}
+                  </div>
+                )}
+
+                {/* Audio API response section */}
+                {(isLoadingAudio || audioUrl || audioError) && (
+                  <div className="bg-gray-100 rounded-lg p-3 mb-3">
+                    <h3 className="font-semibold text-gray-800 mb-2">Audio Generation</h3>
+                    
+                    {/* Loading state for audio */}
+                    {isLoadingAudio && (
+                      <div className="flex items-center justify-center py-2">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mr-2"></div>
+                        <span className="text-blue-500">Generating audio...</span>
+                      </div>
+                    )}
+                    
+                    {/* Error state for audio */}
+                    {audioError && (
+                      <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded text-sm">
+                        {audioError}
+                      </div>
+                    )}
+                    
+                    {/* Success state with audio URL */}
+                    {audioUrl && (
+                      <div className="bg-green-50 border border-green-200 rounded p-2">
+                        <p className="text-sm font-medium text-gray-700 mb-1">Audio URL:</p>
+                        <p className="text-xs text-gray-600 break-all">{JSON.stringify(audioUrl)}</p>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -322,8 +405,8 @@ function MainView(props) {
                 {!isLoadingEvents && Array.isArray(events) && events.map((event) => (
                   <div 
                     key={event.id} 
-                    onClick={handleEventClick} 
-                    className="bg-[rgb(245,246,248)] rounded-[34px] pl-2 pt-2 pr-2 pb-2 flex flex-col overflow-hidden mb-2"
+                    onClick={() => handleEventClick(event)} 
+                    className="bg-[rgb(245,246,248)] rounded-[34px] pl-2 pt-2 pr-2 pb-2 flex flex-col overflow-hidden mb-2 cursor-pointer hover:bg-[rgb(235,236,238)] transition-colors"
                   >
                     <div className="flex items-center gap-x-1.75">
                       <div className="flex flex-col bg-white rounded-[20px] w-10 overflow-hidden">
