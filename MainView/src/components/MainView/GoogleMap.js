@@ -1,31 +1,13 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 
+// Move constant out of component so it's not treated as a changing dependency
+const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+
 const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
   const mapRef = useRef(null);
   const [error, setError] = useState(null);
-  const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
-  useEffect(() => {
-    // Track if it’s already loaded
-    const existingScript = document.querySelector(`script[src*="maps.googleapis.com"]`);
-    if (existingScript) return;
-
-    const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => initMap();
-    script.onerror = () => setError("Failed to load Google Maps API");
-    document.head.appendChild(script);
-
-    return () => {
-      // Clean up the script when component unmounts
-      document.head.removeChild(script);
-    };
-  }, []);
-
-  // Initialize map once API is loaded
-  const initMap = useCallback(()  => {
+  const initMap = useCallback(() => {
     if (!mapRef.current) return;
 
     const defaultCenter = { lat: 0, lng: 0 };
@@ -68,17 +50,12 @@ const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
             if (status === "OK" && results[0]) {
               const resolvedAddress = results[0].formatted_address;
 
-              // 🔁 Send address back to parent
               if (onAddressResolved) {
                 onAddressResolved(resolvedAddress);
               }
 
-              // Extract town and province
-              let street = null;
-              let town = null;
-
-              street = results[0].address_components[1]?.long_name || null;
-              town = results[0].address_components[2]?.long_name || null;
+              let street = results[0].address_components[1]?.long_name || null;
+              let town = results[0].address_components[2]?.long_name || null;
 
               if (street && town && onAreaResolved) {
                 onAreaResolved({ street, town });
@@ -101,7 +78,6 @@ const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
       setError("Geolocation not supported by your browser");
     }
 
-    // Show markers from `places`
     if (places?.Content?.length > 0) {
       places.Content.forEach((place) => {
         const { latitude, longitude } = place.location.coordinates;
@@ -116,7 +92,10 @@ const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
 
   useEffect(() => {
     const existingScript = document.querySelector(`script[src*="maps.googleapis.com"]`);
-    if (existingScript) return;
+    if (existingScript) {
+      initMap(); // Call initMap anyway if script already exists
+      return;
+    }
 
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
@@ -129,8 +108,7 @@ const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
     return () => {
       document.head.removeChild(script);
     };
-  }, [GOOGLE_MAPS_API_KEY, initMap]);
-
+  }, [initMap]); // ✅ now includes initMap only
 
   return (
     <div className="absolute inset-0">
