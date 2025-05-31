@@ -156,5 +156,4 @@ module.exports = {
       backgroundImage: { src: 'var(--src)' },
     },
   },
-  plugins: [require('@tailwindcss/line-clamp')],
 };

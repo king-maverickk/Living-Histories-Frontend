@@ -1,8 +1,7 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 
 const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
   const mapRef = useRef(null);
-  const [map, setMap] = useState(null);
   const [error, setError] = useState(null);
   const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
@@ -26,7 +25,7 @@ const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
   }, []);
 
   // Initialize map once API is loaded
-  const initMap = () => {
+  const initMap = useCallback(()  => {
     if (!mapRef.current) return;
 
     const defaultCenter = { lat: 0, lng: 0 };
@@ -46,8 +45,6 @@ const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
         }
       ]
     });
-
-    setMap(googleMap);
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -115,7 +112,25 @@ const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
         });
       });
     }
-  };
+  }, [places, onAddressResolved, onAreaResolved]);
+
+  useEffect(() => {
+    const existingScript = document.querySelector(`script[src*="maps.googleapis.com"]`);
+    if (existingScript) return;
+
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => initMap();
+    script.onerror = () => setError("Failed to load Google Maps API");
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, [GOOGLE_MAPS_API_KEY, initMap]);
+
 
   return (
     <div className="absolute inset-0">
