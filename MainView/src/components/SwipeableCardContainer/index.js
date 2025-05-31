@@ -1,118 +1,96 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import InformationCard from 'components/InformationCard';
 
-const SwipeableCardContainer = ({ places }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+function SwipeableCardContainer({ places, audioCards }) {
   const containerRef = useRef(null);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
   
-  // Minimum swipe distance required (in pixels)
-  const minSwipeDistance = 50;
-
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
-  };
-
-  const handleNext = () => {
-    if (currentIndex < places.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    }
-  };
-
-  // Touch event handlers
-  const handleTouchStart = (e) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      handleNext();
-    } else if (isRightSwipe) {
-      handlePrevious();
-    }
-    
-    // Reset values
-    setTouchStart(0);
-    setTouchEnd(0);
-  };
-
-  // Scroll to current index when it changes
+  // Add horizontal scrolling behavior
   useEffect(() => {
-    if (containerRef.current) {
-      const scrollPosition = currentIndex * (containerRef.current.offsetWidth / 3);
-      containerRef.current.scrollTo({
-        left: scrollPosition,
-        behavior: 'smooth'
-      });
+    const container = containerRef.current;
+    if (!container) return;
+    
+    // Scroll to the newest card (first in the list) when a new card is added
+    if (audioCards && audioCards.length > 0) {
+      container.scrollLeft = 0;
     }
-  }, [currentIndex]);
+  }, [audioCards]);
 
   return (
-    <div className="w-full h-56 absolute left-4 bottom-5 z-20 pointer-events-none">
-      <div 
-        className="flex gap-x-3 overflow-x-hidden w-full pointer-events-auto"
-        ref={containerRef}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        {places.Content.map((place, index) => (
-          <div key={index} className="flex-shrink-0">
-            <InformationCard 
-              placeName={place.name}
-              distance={place.location?.radius ? `${place.location.radius}m away` : undefined}
-              overview={place.overview}
-              playButtonSrc={place.media?.podcastUrl}
-            />
-          </div>
-        ))}
-      </div>
-      
-      {/* Navigation dots */}
-      <div className="flex justify-center mt-3 pointer-events-auto">
-        {places.Content.map((place, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentIndex(index)}
-            className={`h-2 w-2 mx-1 rounded-full ${
-              index === currentIndex ? 'bg-blue-500' : 'bg-gray-300'
-            }`}
+    <div 
+      ref={containerRef}
+      className="swipeable-card-container flex flex-row gap-x-3 overflow-x-auto pb-4 px-3 snap-x snap-mandatory pointer-events-auto"
+      style={{
+        scrollBehavior: 'smooth',
+        WebkitOverflowScrolling: 'touch',
+        msOverflowStyle: '-ms-autohiding-scrollbar'
+      }}
+    >
+      {/* Audio Information Cards - shown when events are selected */}
+      {audioCards && audioCards.map((card, index) => (
+        <div 
+          key={card.id} 
+          className="min-w-[280px] max-w-[280px] flex-shrink-0 snap-start"
+          style={{
+            // Make the card slightly narrower to show a preview of the next card
+            width: 'calc(90% - 12px)'
+          }}
+        >
+          <InformationCard 
+            id={card.id}
+            eventName={card.eventName}
+            audioUrl={card.audioUrl}
+            isLoading={card.isLoading}
+            audioError={card.audioError}
           />
-        ))}
-      </div>
+        </div>
+      ))}
       
-      {/* Optional arrow navigation */}
-      <div className="absolute top-1/2 w-full flex justify-between px-2 -mt-4 pointer-events-auto">
-        <button 
-          onClick={handlePrevious}
-          className={`bg-white rounded-full p-2 shadow ${currentIndex === 0 ? 'opacity-30' : 'opacity-100'}`}
-          disabled={currentIndex === 0}
+      {/* Original place cards */}
+      {places && places.Content && places.Content.map((place, index) => (
+        <div
+          key={`place-${index}`}
+          className="min-w-[280px] max-w-[280px] flex-shrink-0 snap-start"
+          style={{
+            // Make the card slightly narrower to show a preview of the next card
+            width: 'calc(90% - 12px)'
+          }}
         >
-          ←
-        </button>
-        <button 
-          onClick={handleNext}
-          className={`bg-white rounded-full p-2 shadow ${currentIndex === places.length - 1 ? 'opacity-30' : 'opacity-100'}`}
-          disabled={currentIndex === places.length - 1}
-        >
-          →
-        </button>
-      </div>
+          {/* Original place card content */}
+          <div className="flex flex-col bg-white rounded-[20px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] overflow-hidden">
+            <div className="flex items-center gap-x-3.25 mt-2 mx-6 mb-2">
+              <img
+                className="w-5.25"
+                src={'/assets/MainView/right_arrow.png'}
+                alt="arrow"
+              />
+              <div className="w-52.25 flex flex-col">
+                <p className="font-medium text-4 leading-1.2 font-Inter text-gray mr-8">
+                  Where are you going to?
+                </p>
+                <p className="text-3.5 leading-1.22 font-Inter text-black truncate">
+                  {place.Name || 'Unknown location'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
+}
+
+SwipeableCardContainer.propTypes = {
+  places: PropTypes.object,
+  audioCards: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      eventName: PropTypes.string,
+      audioUrl: PropTypes.string,
+      isLoading: PropTypes.bool,
+      audioError: PropTypes.string
+    })
+  )
 };
 
 export default SwipeableCardContainer;
