@@ -279,7 +279,7 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
           {/* Error message if audio failed to load */}
           {audioError && (
             <div className="px-4 pb-3 text-xs text-red-500">
-              Failed to load audio. Please try again.
+              Oop! Failed to load audio. Please try again.
             </div>
           )}
         </>
