@@ -4,20 +4,7 @@ import PropTypes from 'prop-types';
 import GoogleMap from './GoogleMap';
 import SwipeableCardContainer from 'components/SwipeableCardContainer';
 import GenerateButton from 'components/GenerateButton';
-
-function MainView(props) {
-  const [placesData, setPlacesData] = useState(null);
-  const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
-  const [userAddress, setUserAddress] = useState(null);
-  const [street, setStreet] = useState(null);
-  const [town, setTown] = useState(null);
-  const [showChooseEvent, setShowChooseEvent] = useState(false);
-  const [events, setEvents] = useState([]);
-  const [isLoadingEvents, setIsLoadingEvents] = useState(false);
-  const [eventsError, setEventsError] = useState(null);
-  const [audioUrl, setAudioUrl] = useState(null);
-  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
-  const [audioError, setAudioError] = useState(null);
+import { v4 as uuidv4 } from 'uuid';
 
   // Default event type images based on category
   const categoryImages = {
@@ -30,6 +17,19 @@ function MainView(props) {
     'Music': '/assets/ChooseEvent/music_event.png',
     'default': '/assets/ChooseEvent/649408def69ab7b21e6f704f2a17816e.png'
   };
+
+function MainView(props) {
+  const [placesData, setPlacesData] = useState(null);
+  const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
+  const [userAddress, setUserAddress] = useState(null);
+  const [street, setStreet] = useState(null);
+  const [town, setTown] = useState(null);
+  const [showChooseEvent, setShowChooseEvent] = useState(false);
+  const [events, setEvents] = useState([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(false);
+  const [eventsError, setEventsError] = useState(null);
+  // Replace single audioUrl with array of audio cards
+  const [audioCards, setAudioCards] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -220,9 +220,22 @@ function MainView(props) {
 
   // Function to fetch audio URL from API
   const fetchAudioUrl = async (event) => {
-    setIsLoadingAudio(true);
-    setAudioError(null);
-    setAudioUrl(null);
+    // Create a unique ID for this audio card
+    const cardId = uuidv4();
+    
+    // Create a new audio card with loading state
+    const newCard = {
+      id: cardId,
+      eventName: event.eventName,
+      eventYears: event.eventYears,
+      eventCategory: event.eventCategory,
+      audioUrl: null,
+      isLoading: true,
+      audioError: null
+    };
+    
+    // Add the new card to the beginning of the array
+    setAudioCards(prevCards => [newCard, ...prevCards]);
     
     try {
       console.log("Fetching audio for event:", event);
@@ -256,13 +269,25 @@ function MainView(props) {
       const data = await response.json();
       console.log("Audio API response:", data);
       
-      // Set the audio URL from the response
-      setAudioUrl(data);
+      // Update the card with the audio URL
+      setAudioCards(prevCards => 
+        prevCards.map(card => 
+          card.id === cardId 
+            ? { ...card, audioUrl: data, isLoading: false } 
+            : card
+        )
+      );
     } catch (error) {
       console.error("Error fetching audio:", error);
-      setAudioError(`Failed to generate audio: ${error.message}`);
-    } finally {
-      setIsLoadingAudio(false);
+      
+      // Update the card with the error
+      setAudioCards(prevCards => 
+        prevCards.map(card => 
+          card.id === cardId 
+            ? { ...card, isLoading: false, audioError: `Failed to generate audio: ${error.message}` } 
+            : card
+        )
+      );
     }
   };
 
@@ -271,9 +296,11 @@ function MainView(props) {
   };
 
   const handleEventClick = (event) => {
-    // Don't close the ChooseEvent component immediately
-    // Instead, make the API request with the chosen event
+    // Make the API request with the chosen event
     fetchAudioUrl(event);
+    
+    // Close the ChooseEvent component
+    setShowChooseEvent(false);
   };
 
   return (
@@ -365,36 +392,6 @@ function MainView(props) {
                   </div>
                 )}
 
-                {/* Audio API response section */}
-                {(isLoadingAudio || audioUrl || audioError) && (
-                  <div className="bg-gray-100 rounded-lg p-3 mb-3">
-                    <h3 className="font-semibold text-gray-800 mb-2">Audio Generation</h3>
-                    
-                    {/* Loading state for audio */}
-                    {isLoadingAudio && (
-                      <div className="flex items-center justify-center py-2">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mr-2"></div>
-                        <span className="text-blue-500">Generating audio...</span>
-                      </div>
-                    )}
-                    
-                    {/* Error state for audio */}
-                    {audioError && (
-                      <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded text-sm">
-                        {audioError}
-                      </div>
-                    )}
-                    
-                    {/* Success state with audio URL */}
-                    {audioUrl && (
-                      <div className="bg-green-50 border border-green-200 rounded p-2">
-                        <p className="text-sm font-medium text-gray-700 mb-1">Audio URL:</p>
-                        <p className="text-xs text-gray-600 break-all">{JSON.stringify(audioUrl)}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
                 {/* Event items mapped from API data */}
                 {!isLoadingEvents && events.length === 0 && !eventsError && (
                   <div className="text-center py-4 text-gray-500">
@@ -440,14 +437,15 @@ function MainView(props) {
             </div>
           )}
         </div>
-      </div>
 
-      {/* Swipeable cards at bottom - only shown if places data exists and has content */}
-      {placesData && placesData.Content && placesData.Content.length > 0 && (
-        <div className="w-full h-55 flex gap-x-3 absolute left-3.75 bottom-5.25 min-h-31 z-20 pointer-events-none">
-          <SwipeableCardContainer places={placesData} />
+        {/* Bottom section with SwipeableCardContainer */}
+        <div className="mt-auto mb-4 w-full">
+          <SwipeableCardContainer 
+            places={placesData} 
+            audioCards={audioCards}
+          />
         </div>
-      )}
+      </div>
     </div>
   );
 }
