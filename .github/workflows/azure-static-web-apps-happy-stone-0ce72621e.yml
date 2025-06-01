@@ -33,6 +33,9 @@ jobs:
           ###### End of Repository/Build Configurations ######
         env:
           REACT_APP_GOOGLE_MAPS_API_KEY: ${{ secrets.REACT_APP_GOOGLE_MAPS_API_KEY }}
+          REACT_APP_PLACES_ENDPOINT: ${{ secrets.REACT_APP_PLACES_ENDPOINT }}
+          REACT_APP_GET_EVENTS_ENDPOINT: ${{ secrets.REACT_APP_GET_EVENTS_ENDPOINT }}
+          REACT_APP_AUDIO_GEN_ENDPOINT: ${{ secrets.REACT_APP_AUDIO_GEN_ENDPOINT }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
