@@ -101,7 +101,7 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
           ? 'h-[500px] rounded-[20px] shadow-xl z-50' 
           : isExpanded 
             ? 'h-auto rounded-[20px] shadow-md' 
-            : 'h-16 rounded-[20px] shadow-md'
+            : 'h-14 rounded-[20px] shadow-md'
       }`}
       style={{
         backgroundColor: isFullyExpanded ? 'transparent' : 'white',
@@ -112,8 +112,8 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
       {/* Fully expanded view with background image */}
       {isFullyExpanded && (
         <div className="absolute inset-0 w-full h-full">
-          {/* Background image - covering title and play button */}
-          <div className="absolute top-0 left-0 right-0 h-2/5 overflow-hidden">
+          {/* Background image - adjusted to cover title area */}
+          <div className="absolute top-0 left-0 right-0 h-1/3 overflow-hidden">
             <img 
               src="/assets/InformationCard/background_city_view.jpg" 
               alt="Background" 
@@ -124,7 +124,7 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
           </div>
           
           {/* White background for the rest of the card */}
-          <div className="absolute top-2/5 left-0 right-0 bottom-0 bg-white"></div>
+          <div className="absolute top-1/3 left-0 right-0 bottom-0 bg-white"></div>
           
           {/* Close button */}
           <button 
@@ -136,19 +136,19 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
             </svg>
           </button>
           
-          {/* Play button (larger and positioned higher) */}
+          {/* Play button (slightly larger and positioned higher) */}
           <div className="absolute top-1/6 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
             <button 
               onClick={handlePlayPause}
-              className="w-32 h-32 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg focus:outline-none border-2 border-white/50"
+              className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg focus:outline-none border-2 border-white/50"
               disabled={!audioUrl || audioError}
             >
               {isPlaying ? (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-white" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
               ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-white" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                 </svg>
               )}
@@ -158,20 +158,20 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
           {/* Content container */}
           <div className="absolute inset-0 flex flex-col p-6">
             {/* Event title and year - positioned at the bottom of the image section */}
-            <div className="mt-24 mb-4 text-white">
+            <div className="mt-16 mb-2 text-white">
               <h2 className="text-2xl font-bold mb-1">{eventName}</h2>
               <p className="text-sm text-gray-300">{eventYears}</p>
             </div>
             
             {/* Info tags - positioned closer to the Event Title with bolder text */}
-            <div className="flex flex-wrap gap-2 mb-4 mt-16 text-gray-800">
+            <div className="flex flex-wrap gap-2 mb-4 mt-8 text-gray-800">
               {/* Category tag */}
-              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold">
+              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-bold">
                 {eventCategory || 'Historical'}
               </div>
               
               {/* Not fact checked tag */}
-              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold flex items-center">
+              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-bold flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-500 mr-1" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
@@ -179,7 +179,7 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
               </div>
               
               {/* Additional tag */}
-              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold">
+              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-bold">
                 Audio guide
               </div>
             </div>
@@ -195,7 +195,7 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
                 <span>{formatTime(currentTime)}</span>
                 <span>{formatTime(audioDuration)}</span>
               </div>
-              <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="relative h-3 bg-gray-200 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-black rounded-full transition-all duration-300 ease-in-out" 
                   style={{ width: `${progressPercentage}%` }}
@@ -209,9 +209,9 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
       {/* Regular card view (not fully expanded) */}
       {!isFullyExpanded && (
         <>
-          <div className="flex items-center p-3">
-            {/* Left side - Play button or loading state */}
-            <div className="mr-3">
+          <div className="flex items-center p-2 py-1.5">
+            {/* Left side - Play button or loading state - reduced margin */}
+            <div className="mr-2">
               {isLoading ? (
                 <div className="flex justify-center items-center">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
@@ -219,7 +219,7 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
               ) : (
                 <button 
                   onClick={handlePlayPause}
-                  className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md focus:outline-none"
+                  className="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-md focus:outline-none"
                   disabled={!audioUrl || audioError}
                 >
                   {isPlaying ? (
@@ -237,11 +237,12 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
             
             {/* Middle - Event name and progress bar */}
             <div className="flex-grow">
-              <div className="text-base font-semibold text-gray-900 line-clamp-2 w-full">
+              {/* Updated font size to be closer to fully expanded state and made it bolder */}
+              <div className="text-lg font-bold text-gray-900 line-clamp-2 w-full">
                 {eventName || "Loading event information..."}
               </div>
               
-              <div className="mt-1 relative h-2 bg-gray-200 rounded-full overflow-hidden z-10" ref={progressBarRef}>
+              <div className="mt-0.5 relative h-2 bg-gray-200 rounded-full overflow-hidden z-10" ref={progressBarRef}>
                 {/* Progress bar with shimmer effect during loading */}
                 {isLoading ? (
                   <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-400 to-gray-200 animate-shimmer" 
@@ -258,17 +259,17 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
               </div>
             </div>
             
-            {/* Right - Timer */}
-            <div className="ml-3 text-xs text-gray-500 min-w-[40px] text-right">
+            {/* Right - Timer - reduced margin */}
+            <div className="ml-2 text-xs text-gray-500 min-w-[40px] text-right">
               {isLoading ? '0:00' : formatTime(currentTime)}
             </div>
           </div>
           
-          {/* Expanded section with "Open more" text */}
+          {/* Expanded section with "Open more" text in its own div with #303030 background */}
           {isExpanded && (
-            <div className="px-4 pb-3 pt-0">
+            <div className="px-4 pb-2 pt-1">
               <div 
-                className="text-center text-sm text-white cursor-pointer hover:text-gray-200 bg-[#303030] py-1 rounded-md"
+                className="text-center text-sm text-white cursor-pointer hover:text-gray-200 bg-[#303030] py-1.5 rounded-md w-full"
                 onClick={handleOpenMore}
               >
                 Open more
@@ -278,8 +279,8 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
           
           {/* Error message if audio failed to load */}
           {audioError && (
-            <div className="px-4 pb-3 text-xs text-red-500">
-              Oop! Failed to load audio. Please try again.
+            <div className="px-4 pb-2 text-xs text-red-500">
+              Failed to load audio. Please try again.
             </div>
           )}
         </>
@@ -303,9 +304,11 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
           left: 0;
           right: 0;
           bottom: 0;
-          background-color: rgba(0, 0, 0, 0.5);
+          background-color: rgba(0, 0, 0, 0.6);
           z-index: 40;
           pointer-events: none;
+          backdrop-filter: blur(1px);
+          transition: all 0.3s ease-in-out;
         }
       `}</style>
     </div>
