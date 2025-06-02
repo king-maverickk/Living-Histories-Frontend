@@ -11,6 +11,10 @@ import { v4 as uuidv4 } from 'uuid';
     'Cultural': '/assets/ChooseEvent/649408def69ab7b21e6f704f2a17816e.png',
     'Historical': '/assets/ChooseEvent/historical_marker.png',
     'Political': '/assets/ChooseEvent/political_event.png',
+    'Civic': '/assets/ChooseEvent/political_event.png',
+    'Civic/Political': '/assets/ChooseEvent/political_event.png',
+    'Sports': '/assets/ChooseEvent/sports_event.png',
+    'Music': '/assets/ChooseEvent/music_event.png',
     'default': '/assets/ChooseEvent/649408def69ab7b21e6f704f2a17816e.png'
   };
 
