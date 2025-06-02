@@ -46,13 +46,13 @@ function MainView(props) {
           setPlacesData(parsedData);
           console.log("Using cached places data:", parsedData);
         } else {
-          const url = `${process.env.REACT_APP_PLACES_ENDPOINT}?id=${encodeURIComponent(
+          /*const url = `${process.env.REACT_APP_PLACES_ENDPOINT}?id=${encodeURIComponent(
             street
           )}&partitionKey=${encodeURIComponent(town)}`;
           console.log("Fetching places with:", {
             id: street,
             partitionKey: town,
-          });
+          });*/
           
           try {
             /*const response = await fetch(url);
