@@ -55,7 +55,7 @@ function MainView(props) {
           });
           
           try {
-            const response = await fetch(url);
+            /*const response = await fetch(url);
             console.log("Response status:", response.status);
             
             if (!response.ok) {
@@ -64,7 +64,8 @@ function MainView(props) {
             
             const data = await response.json();
             console.log("Fetched places data:", data);
-            
+            */
+            const data = null;
             // Handle empty data case
             if (!data || (data.Content && data.Content.length === 0)) {
               console.log("No places data available");
@@ -273,7 +274,7 @@ function MainView(props) {
       setAudioCards(prevCards => 
         prevCards.map(card => 
           card.id === cardId 
-            ? { ...card, audioUrl: data, isLoading: false } 
+            ? { ...card, audioUrl: data.audioUrl, isLoading: false } 
             : card
         )
       );
