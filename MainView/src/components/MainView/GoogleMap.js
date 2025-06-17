@@ -57,8 +57,16 @@ const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
               let street = results[0].address_components[1]?.long_name || null;
               let town = results[0].address_components[2]?.long_name || null;
 
+              let country = null;
+              for (let component of results[0].address_components) {
+                if (component.types.includes("country")) {
+                  country = component.long_name;
+                  break;
+                }
+              }
+
               if (street && town && onAreaResolved) {
-                onAreaResolved({ street, town });
+                onAreaResolved({ street, town, country });
               }
             } else {
               if (onAddressResolved) {

@@ -24,6 +24,7 @@ function MainView(props) {
   const [userAddress, setUserAddress] = useState(null);
   const [street, setStreet] = useState(null);
   const [town, setTown] = useState(null);
+  const [country, setCountry] = useState(null);
   const [showChooseEvent, setShowChooseEvent] = useState(false);
   const [events, setEvents] = useState([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState(false);
@@ -38,7 +39,7 @@ function MainView(props) {
       setIsLoadingPlaces(true);
 
       try {
-        const cacheKey = `places_${street}_${town}`;
+        const cacheKey = `places_${town}_${country}`;
         const cachedData = localStorage.getItem(cacheKey);
 
         if (cachedData) {
@@ -47,11 +48,11 @@ function MainView(props) {
           console.log("Using cached places data:", parsedData);
         } else {
           /*const url = `${process.env.REACT_APP_PLACES_ENDPOINT}?id=${encodeURIComponent(
-            street
-          )}&partitionKey=${encodeURIComponent(town)}`;
+            town
+          )}&partitionKey=${encodeURIComponent(country)}`;
           console.log("Fetching places with:", {
             id: street,
-            partitionKey: town,
+            partitionKey: country, //country here
           });*/
           
           try {
@@ -153,6 +154,7 @@ function MainView(props) {
       try {
         const url = `${process.env.REACT_APP_GET_EVENTS_ENDPOINT}?location=${encodeURIComponent(town)}`;
         console.log("Fetching events with location:", town);
+        console.log("Country: ", country)
         
         const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to fetch events');
@@ -249,7 +251,8 @@ function MainView(props) {
         eventName,
         eventYears,
         eventCategory,
-        town // Include the town in the request body
+        town, // Include the town in the request body
+        country // country here
       };
       
       console.log("Sending audio request with:", requestBody);
@@ -314,6 +317,7 @@ function MainView(props) {
           onAreaResolved={(area) => {
             setStreet(area.street);
             setTown(area.town);
+            setCountry(area.country)
           }}
         />
       </div>
