@@ -34,7 +34,7 @@ function MainView(props) {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!street || !town) return;
+      if (!street || !town || !country) return;
 
       setIsLoadingPlaces(true);
 
@@ -92,7 +92,7 @@ function MainView(props) {
     };
 
     fetchData();
-  }, [street, town]);
+  }, [street, town, country]);
 
   // Parse free-text event string into structured object
   const parseEventString = (eventString) => {
@@ -146,14 +146,14 @@ function MainView(props) {
   // Fetch events from API when town changes
   useEffect(() => {
     const fetchEvents = async () => {
-      if (!town) return;
+      if (!town || country) return;
       
       setIsLoadingEvents(true);
       setEventsError(null);
       
       try {
-        const url = `${process.env.REACT_APP_GET_EVENTS_ENDPOINT}?location=${encodeURIComponent(town)}`;
-        console.log("Fetching events with location:", town);
+        const url = `${process.env.REACT_APP_GET_EVENTS_ENDPOINT}?location=${encodeURIComponent(town)}&country=${encodeURIComponent(country)}`;
+        console.log("Fetching events with location:", town, country);
         console.log("Country: ", country)
         
         const response = await fetch(url);
@@ -219,7 +219,7 @@ function MainView(props) {
     };
     
     fetchEvents();
-  }, [town]);
+  }, [town, country]);
 
   // Function to fetch audio URL from API
   const fetchAudioUrl = async (event) => {
