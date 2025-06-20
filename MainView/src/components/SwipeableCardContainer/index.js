@@ -1,11 +1,26 @@
+/**
+ * SwipeableCardContainer Component
+ * Container for horizontally scrollable cards displaying places and audio content
+ * @param {Object} props - Component props
+ * @param {Object} props.places - Places data object
+ * @param {Array} props.audioCards - Array of audio card objects
+ * @returns {JSX.Element} SwipeableCardContainer component
+ */
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import InformationCard from 'components/InformationCard';
 
+/**
+ * SwipeableCardContainer component for displaying scrollable cards
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered SwipeableCardContainer component
+ */
 function SwipeableCardContainer({ places, audioCards }) {
   const containerRef = useRef(null);
   
-  // Add horizontal scrolling behavior
+  /**
+   * Add horizontal scrolling behavior and auto-scroll to newest card
+   */
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -19,11 +34,12 @@ function SwipeableCardContainer({ places, audioCards }) {
   return (
     <div 
       ref={containerRef}
-      className="swipeable-card-container flex flex-row gap-x-3 overflow-x-auto pb-4 px-3 snap-x snap-mandatory pointer-events-auto"
+      className="swipeable-card-container absolute bottom-3 left-4 right-0 flex flex-row gap-x-3 overflow-x-auto pb-4 px-3 snap-x snap-mandatory pointer-events-auto"
       style={{
         scrollBehavior: 'smooth',
         WebkitOverflowScrolling: 'touch',
-        msOverflowStyle: '-ms-autohiding-scrollbar'
+        msOverflowStyle: '-ms-autohiding-scrollbar',
+        marginBottom: '12px'
       }}
     >
       {/* Audio Information Cards - shown when events are selected */}

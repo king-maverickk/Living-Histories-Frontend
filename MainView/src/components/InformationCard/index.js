@@ -1,6 +1,24 @@
+/**
+ * InformationCard Component
+ * Interactive card component that displays event information and audio playback
+ * @param {Object} props - Component props
+ * @param {string} props.id - Unique identifier for the card
+ * @param {string} props.eventName - Name of the event
+ * @param {string} props.eventYears - Years when the event occurred
+ * @param {string} props.eventCategory - Category of the event
+ * @param {string} props.audioUrl - URL of the audio file
+ * @param {boolean} props.isLoading - Loading state indicator
+ * @param {string} props.audioError - Error message if audio fails to load
+ * @returns {JSX.Element} InformationCard component
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
+/**
+ * InformationCard component for displaying event information with audio playback
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered InformationCard component
+ */
 function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoading, audioError, id }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isFullyExpanded, setIsFullyExpanded] = useState(false);
@@ -11,7 +29,9 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
   const progressBarRef = useRef(null);
   const cardRef = useRef(null);
 
-  // Initialize audio object when audioUrl is available
+  /**
+   * Initialize audio object when audioUrl is available
+   */
   useEffect(() => {
     if (audioUrl) {
       const newAudio = new Audio(audioUrl);
@@ -43,7 +63,10 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
     }
   }, [audioUrl]);
 
-  // Handle play/pause button click
+  /**
+   * Handle play/pause button click
+   * @param {Event} e - Click event
+   */
   const handlePlayPause = (e) => {
     e.stopPropagation(); // Prevent event bubbling
     if (!audio) return;
@@ -57,7 +80,9 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
     setIsPlaying(!isPlaying);
   };
 
-  // Handle "Open more" click
+  /**
+   * Handle "Open more" click to expand card fully
+   */
   const handleOpenMore = () => {
     setIsFullyExpanded(true);
     
@@ -65,7 +90,10 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
     document.body.classList.add('map-darkened');
   };
 
-  // Handle close button click
+  /**
+   * Handle close button click to collapse card
+   * @param {Event} e - Click event
+   */
   const handleClose = (e) => {
     e.stopPropagation(); // Prevent event bubbling
     setIsFullyExpanded(false);
@@ -74,14 +102,20 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
     document.body.classList.remove('map-darkened');
   };
 
-  // Cleanup on unmount
+  /**
+   * Cleanup on unmount
+   */
   useEffect(() => {
     return () => {
       document.body.classList.remove('map-darkened');
     };
   }, []);
 
-  // Format time in MM:SS format
+  /**
+   * Format time in MM:SS format
+   * @param {number} timeInSeconds - Time in seconds
+   * @returns {string} Formatted time string
+   */
   const formatTime = (timeInSeconds) => {
     if (isNaN(timeInSeconds)) return '0:00';
     
@@ -104,14 +138,14 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
             : 'h-16 rounded-[20px] shadow-md'
       }`}
       style={{
-        backgroundColor: isFullyExpanded ? 'transparent' : 'white',
-        transform: isFullyExpanded ? 'scale(1.02)' : 'scale(1)',
+        backgroundColor: isFullyExpanded ? 'white' : 'white', // Changed to white for expanded state
+        transform: isFullyExpanded ? 'scale(1.05)' : 'scale(1)', // Enhanced growing animation
         transformOrigin: 'center',
       }}
     >
-      {/* Fully expanded view with background image */}
+      {/* Fully expanded view with white background */}
       {isFullyExpanded && (
-        <div className="absolute inset-0 w-full h-full">
+        <div className="absolute inset-0 w-full h-full bg-white">
           {/* Background image - covering title and play button */}
           <div className="absolute top-0 left-0 right-0 h-2/5 overflow-hidden">
             <img 
@@ -123,15 +157,12 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
             <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/70"></div>
           </div>
           
-          {/* White background for the rest of the card */}
-          <div className="absolute top-2/5 left-0 right-0 bottom-0 bg-white"></div>
-          
-          {/* Close button */}
+          {/* Close button - enhanced with circular semi-transparent background */}
           <button 
             onClick={handleClose}
-            className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/30 flex items-center justify-center z-10 hover:bg-white/50 transition-colors"
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center z-10 hover:bg-black/60 transition-all duration-200 border border-white/20"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>
           </button>
@@ -163,15 +194,15 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
               <p className="text-sm text-gray-300">{eventYears}</p>
             </div>
             
-            {/* Info tags - positioned closer to the Event Title with bolder text */}
-            <div className="flex flex-wrap gap-2 mb-4 mt-16 text-gray-800">
+            {/* Info tags - aligned as one row with horizontal scroll and 0 margin top */}
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide mt-0 mb-4 text-gray-800" style={{ marginTop: '0px' }}>
               {/* Category tag */}
-              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold">
+              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0">
                 {eventCategory || 'Historical'}
               </div>
               
               {/* Not fact checked tag */}
-              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold flex items-center">
+              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold flex items-center whitespace-nowrap flex-shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-500 mr-1" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
@@ -179,8 +210,17 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
               </div>
               
               {/* Additional tag */}
-              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold">
+              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0">
                 Audio guide
+              </div>
+              
+              {/* Extra tags to demonstrate horizontal scrolling */}
+              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0">
+                Cultural Heritage
+              </div>
+              
+              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0">
+                Architecture
               </div>
             </div>
             
@@ -285,7 +325,7 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
         </>
       )}
       
-      {/* CSS for shimmer animation and map darkening */}
+      {/* CSS for shimmer animation, map darkening, and scrollbar hiding */}
       <style jsx>{`
         @keyframes shimmer {
           0% { background-position: 200% 0; }
@@ -293,6 +333,15 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
         }
         .animate-shimmer {
           animation: shimmer 1.5s infinite linear;
+        }
+        
+        /* Hide scrollbar for tags */
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
         }
         
         /* Global style for map darkening */
@@ -323,3 +372,4 @@ InformationCard.propTypes = {
 };
 
 export default InformationCard;
+

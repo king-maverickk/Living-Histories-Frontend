@@ -1,14 +1,36 @@
+/**
+ * GoogleMap Component - Optimized for performance
+ * Renders Google Maps with user location and places markers
+ * @param {Object} props - Component props
+ * @param {Object} props.places - Places data object
+ * @param {Function} props.onAddressResolved - Callback for address resolution
+ * @param {Function} props.onAreaResolved - Callback for area resolution
+ * @returns {JSX.Element} GoogleMap component
+ */
 import React, { useRef, useState, useEffect, useCallback } from "react";
+import PropTypes from "prop-types";
 
 // Move constant out of component so it's not treated as a changing dependency
 const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
-const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
+/**
+ * GoogleMap component wrapped with React.memo for performance optimization
+ * Only re-renders when props actually change
+ */
+const GoogleMap = React.memo(({ places, onAddressResolved, onAreaResolved }) => {
   const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const userMarkerRef = useRef(null);
+  const placesMarkersRef = useRef([]);
   const [error, setError] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  /**
+   * Initialize Google Map with optimized settings
+   * Memoized to prevent recreation on every render
+   */
   const initMap = useCallback(() => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || isInitialized) return;
 
     const defaultCenter = { lat: 0, lng: 0 };
 
@@ -28,6 +50,10 @@ const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
       ]
     });
 
+    mapInstanceRef.current = googleMap;
+    setIsInitialized(true);
+
+    // Get user location only once
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -38,13 +64,19 @@ const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
 
           googleMap.setCenter(userLocation);
 
-          new window.google.maps.Marker({
-            position: userLocation,
-            map: googleMap,
-            title: "Your Location",
-            animation: window.google.maps.Animation.DROP,
-          });
+          // Create or update user marker
+          if (userMarkerRef.current) {
+            userMarkerRef.current.setPosition(userLocation);
+          } else {
+            userMarkerRef.current = new window.google.maps.Marker({
+              position: userLocation,
+              map: googleMap,
+              title: "Your Location",
+              animation: window.google.maps.Animation.DROP,
+            });
+          }
 
+          // Geocode only once per session
           const geocoder = new window.google.maps.Geocoder();
           geocoder.geocode({ location: userLocation }, (results, status) => {
             if (status === "OK" && results[0]) {
@@ -85,23 +117,44 @@ const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
     } else {
       setError("Geolocation not supported by your browser");
     }
+  }, [onAddressResolved, onAreaResolved, isInitialized]);
 
+  /**
+   * Update places markers when places data changes
+   * Optimized to only update when necessary
+   */
+  const updatePlacesMarkers = useCallback(() => {
+    if (!mapInstanceRef.current) return;
+
+    // Clear existing places markers
+    placesMarkersRef.current.forEach(marker => marker.setMap(null));
+    placesMarkersRef.current = [];
+
+    // Add new places markers
     if (places?.Content?.length > 0) {
       places.Content.forEach((place) => {
-        const { latitude, longitude } = place.location.coordinates;
-        new window.google.maps.Marker({
-          position: { lat: latitude, lng: longitude },
-          map: googleMap,
-          title: place.name,
-        });
+        if (place.location?.coordinates) {
+          const { latitude, longitude } = place.location.coordinates;
+          const marker = new window.google.maps.Marker({
+            position: { lat: latitude, lng: longitude },
+            map: mapInstanceRef.current,
+            title: place.name,
+          });
+          placesMarkersRef.current.push(marker);
+        }
       });
     }
-  }, [places, onAddressResolved, onAreaResolved]);
+  }, [places]);
 
+  /**
+   * Load Google Maps API script only once
+   */
   useEffect(() => {
     const existingScript = document.querySelector(`script[src*="maps.googleapis.com"]`);
     if (existingScript) {
-      initMap(); // Call initMap anyway if script already exists
+      if (window.google && window.google.maps) {
+        initMap();
+      }
       return;
     }
 
@@ -114,9 +167,21 @@ const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
     document.head.appendChild(script);
 
     return () => {
-      document.head.removeChild(script);
+      // Cleanup script only if we added it
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
     };
-  }, [initMap]); // ✅ now includes initMap only
+  }, [initMap]);
+
+  /**
+   * Update places markers when places data changes
+   */
+  useEffect(() => {
+    if (isInitialized) {
+      updatePlacesMarkers();
+    }
+  }, [places, isInitialized, updatePlacesMarkers]);
 
   return (
     <div className="absolute inset-0">
@@ -128,6 +193,16 @@ const GoogleMap = ({ places, onAddressResolved, onAreaResolved }) => {
       <div ref={mapRef} className="w-full h-full" style={{ cursor: "grab" }} />
     </div>
   );
+});
+
+// Add display name for debugging
+GoogleMap.displayName = 'GoogleMap';
+
+GoogleMap.propTypes = {
+  places: PropTypes.object,
+  onAddressResolved: PropTypes.func,
+  onAreaResolved: PropTypes.func,
 };
 
 export default GoogleMap;
+
