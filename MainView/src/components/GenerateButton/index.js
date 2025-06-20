@@ -1,7 +1,18 @@
+/**
+ * GenerateButton Component
+ * Button component that triggers event generation functionality
+ * @param {Object} props - Component props
+ * @param {string} props.className - Additional CSS classes
+ * @returns {JSX.Element} GenerateButton component
+ */
 import React from 'react';
 import PropTypes from 'prop-types';
-//import cn from 'classnames';  // Line 3:8:  'cn' is defined but never used  no-unused-vars
 
+/**
+ * GenerateButton component for triggering event selection
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered GenerateButton component
+ */
 function GenerateButton(props) {
   return (
     <div
@@ -10,7 +21,7 @@ function GenerateButton(props) {
       <img
         className="w-6.75 m-2"
         src={'/assets/GenerateButton/135982799adfa93f00565d4fdb152f0f.jpg'}
-        alt="alt text"
+        alt="Generate button icon"
       />
     </div>
   );
@@ -21,3 +32,4 @@ GenerateButton.propTypes = {
 };
 
 export default GenerateButton;
+
