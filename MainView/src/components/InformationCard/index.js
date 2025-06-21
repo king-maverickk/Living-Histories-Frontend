@@ -195,37 +195,33 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
             </div>
             
             {/* Info tags - aligned as one row with horizontal scroll and 0 margin top */}
-            <div className="flex gap-2 overflow-x-auto scrollbar-hide mt-0 mb-4 text-gray-800" style={{ marginTop: '0px' }}>
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide mt-0 mb-4 text-white" style={{ marginTop: '0px' }}>
               {/* Category tag */}
-              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0">
+              <div className="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0" style={{ backgroundColor: '#303030' }}>
                 {eventCategory || 'Historical'}
               </div>
-              
+
               {/* Not fact checked tag */}
-              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold flex items-center whitespace-nowrap flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-500 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <div className="px-3 py-1 rounded-full text-xs font-semibold flex items-center whitespace-nowrap flex-shrink-0" style={{ backgroundColor: '#FFD60A', color: '#7A5F00' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
                 Not fact checked
               </div>
-              
-              {/* Additional tag */}
-              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0">
+
+              {/* Audio guide tag */}
+              <div className="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0" style={{ backgroundColor: '#1f1f1f' }}>
                 Audio guide
               </div>
-              
-              {/* Extra tags to demonstrate horizontal scrolling */}
-              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0">
+
+              {/* Cultural Heritage tag */}
+              <div className="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0" style={{ backgroundColor: '#1b1c1e' }}>
                 Cultural Heritage
-              </div>
-              
-              <div className="bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0">
-                Architecture
               </div>
             </div>
             
             {/* Description text - now with dark text */}
-            <p className="text-sm text-gray-700 mb-4 line-clamp-3">
+            <p className="text-sm text-gray-700 mb-4 line-clamp-5">
               This historical event marks a significant moment in the development of the area. The architecture and cultural significance continue to influence the surrounding community to this day. Visitors can explore the site and learn about its rich history through guided tours and informational displays.
             </p>
             
