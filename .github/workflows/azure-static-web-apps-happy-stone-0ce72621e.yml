@@ -30,6 +30,7 @@ jobs:
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "/MainView" # App source code path
           output_location: "build" # Built app content directory - optional
+          api_location: "api"
           ###### End of Repository/Build Configurations ######
         env:
           REACT_APP_GOOGLE_MAPS_API_KEY: ${{ secrets.REACT_APP_GOOGLE_MAPS_API_KEY }}
