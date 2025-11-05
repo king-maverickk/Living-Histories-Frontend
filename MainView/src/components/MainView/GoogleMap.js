@@ -11,7 +11,7 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 
 // Move constant out of component so it's not treated as a changing dependency
-const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+const GOOGLE_MAPS_API_KEY = import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
 /**
  * GoogleMap component wrapped with React.memo for performance optimization
