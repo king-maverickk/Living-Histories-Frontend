@@ -170,7 +170,7 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
           <div className="absolute top-1/6 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
             <button 
               onClick={handlePlayPause}
-              className="w-32 h-32 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg focus:outline-none border-2 border-white/50"
+              className="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center shadow-lg focus:outline-none border-2 border-white/50"
               disabled={!audioUrl || audioError}
             >
               {isPlaying ? (
@@ -220,7 +220,7 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
             </div>
             
             {/* Description text - now with dark text */}
-            <p className="text-sm text-gray-700 mb-4 line-clamp-5">
+            <p className="text-sm text-gray-700 mb-4 line-clamp-8">
               {eventScript}
             </p>
             
