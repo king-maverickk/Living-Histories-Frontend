@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
  * @param {Object} props - Component props
  * @returns {JSX.Element} Rendered InformationCard component
  */
-function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoading, audioError, id }) {
+function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoading, audioError, id, eventScript }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isFullyExpanded, setIsFullyExpanded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -130,7 +130,7 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
   return (
     <div 
       ref={cardRef}
-      className={`information-card relative overflow-hidden transition-all duration-500 ease-in-out ${
+      className={`information-card relative overflow-hidden transition-all behavior duration-500 ease-in-out ${
         isFullyExpanded 
           ? 'h-[500px] rounded-[20px] shadow-xl z-50' 
           : isExpanded 
@@ -140,21 +140,20 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
       style={{
         backgroundColor: isFullyExpanded ? 'white' : 'white', // Changed to white for expanded state
         transform: isFullyExpanded ? 'scale(1.05)' : 'scale(1)', // Enhanced growing animation
-        transformOrigin: 'center',
+        transformOrigin: 'top',
       }}
     >
       {/* Fully expanded view with white background */}
       {isFullyExpanded && (
-        <div className="absolute inset-0 w-full h-full bg-white">
+        <div className="inset-0 w-full h-full bg-white">
           {/* Background image - covering title and play button */}
-          <div className="absolute top-0 left-0 right-0 h-2/5 overflow-hidden">
+          <div className="top-0 left-0 right-0 h-2/5 overflow-hidden">
             <img 
               src="/assets/InformationCard/background_city_view.jpg" 
               alt="Background" 
-              className="w-full h-auto object-cover min-h-full"
+              className="w-full h-190 object-cover"
             />
-            {/* Gradient overlay for better text visibility */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/70"></div>
+            {/* broken actually */}
           </div>
           
           {/* Close button - enhanced with circular semi-transparent background */}
@@ -171,7 +170,7 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
           <div className="absolute top-1/6 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
             <button 
               onClick={handlePlayPause}
-              className="w-32 h-32 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg focus:outline-none border-2 border-white/50"
+              className="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center shadow-lg focus:outline-none border-2 border-white/50"
               disabled={!audioUrl || audioError}
             >
               {isPlaying ? (
@@ -187,15 +186,15 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
           </div>
           
           {/* Content container */}
-          <div className="absolute inset-0 flex flex-col p-6">
+          <div className="inset-0 flex flex-col p-3">
             {/* Event title and year - positioned at the bottom of the image section */}
-            <div className="mt-24 mb-4 text-white">
-              <h2 className="text-2xl font-bold mb-1">{eventName}</h2>
+            <div className="mb-4 text-white">
+              <h2 className="text-2l font-semibold text-black">{eventName}</h2>
               <p className="text-sm text-gray-300">{eventYears}</p>
             </div>
             
             {/* Info tags - aligned as one row with horizontal scroll and 0 margin top */}
-            <div className="flex gap-2 overflow-x-auto scrollbar-hide mt-0 mb-4 text-white" style={{ marginTop: '0px' }}>
+            <div className="flex gap-1 overflow-x-auto scrollbar-hide mt-0 mb-4 text-white" style={{ marginTop: '0px' }}>
               {/* Category tag */}
               <div className="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0" style={{ backgroundColor: '#303030' }}>
                 {eventCategory || 'Historical'}
@@ -221,8 +220,8 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
             </div>
             
             {/* Description text - now with dark text */}
-            <p className="text-sm text-gray-700 mb-4 line-clamp-5">
-              This historical event marks a significant moment in the development of the area. The architecture and cultural significance continue to influence the surrounding community to this day. Visitors can explore the site and learn about its rich history through guided tours and informational displays.
+            <p className="text-sm text-gray-700 mb-4 line-clamp-8">
+              {eventScript}
             </p>
             
             {/* Audio progress - made more visible */}
@@ -259,11 +258,11 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
                   disabled={!audioUrl || audioError}
                 >
                   {isPlaying ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-black" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
                     </svg>
                   ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-black" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                     </svg>
                   )}
@@ -295,7 +294,7 @@ function InformationCard({ eventName, eventYears, eventCategory, audioUrl, isLoa
             </div>
             
             {/* Right - Timer */}
-            <div className="ml-3 text-xs text-gray-500 min-w-[40px] text-right">
+            <div className="ml-3 text-xs text-gray-500 min-w-[35px] text-right">
               {isLoading ? '0:00' : formatTime(currentTime)}
             </div>
           </div>

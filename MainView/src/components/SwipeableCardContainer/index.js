@@ -34,7 +34,7 @@ function SwipeableCardContainer({ places, audioCards }) {
   return (
     <div 
       ref={containerRef}
-      className="swipeable-card-container absolute bottom-3 left-4 right-0 flex flex-row gap-x-3 overflow-x-auto pb-4 px-3 snap-x snap-mandatory pointer-events-auto"
+      className="swipeable-card-container absolute bottom-3 left-0 right-0 flex flex-row gap-x-3 overflow-x-auto pb-4 px-3 snap-x snap-mandatory pointer-events-auto"
       style={{
         scrollBehavior: 'smooth',
         WebkitOverflowScrolling: 'touch',

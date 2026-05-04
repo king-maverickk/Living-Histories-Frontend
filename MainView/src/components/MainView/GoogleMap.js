@@ -32,7 +32,7 @@ const GoogleMap = React.memo(({ places, onAddressResolved, onAreaResolved }) => 
   const initMap = useCallback(() => {
     if (!mapRef.current || isInitialized) return;
 
-    const defaultCenter = { lat: 0, lng: 0 };
+    const defaultCenter = { lat: 43.65107, lng: -79.347015 }; // Toronto, Canada
 
     const googleMap = new window.google.maps.Map(mapRef.current, {
       zoom: 15,
